@@ -16,17 +16,17 @@ char check_all_caps(char *string, unsigned int n);
 char rotation_encode(char *string, unsigned int n, int cypher);
 
 //function to decode string with rotation cypher
-char rotation_decode(char *string, unsigned int n);
+char rotation_decode(char *string, unsigned int n, int cypher);
 
 //function to decode string without rotation cypher
-char rotation_decrypt(char *string, )
+char rotation_decrypt(char *string, unsigned int n);
 
 
 
 //FUNCTIONS FOR SUBSTITUTION CYPHER
 
 //function to encode string with substitution cypher
-char substitution_cypher(char *string, unsigned int)
+char substitution_cypher(char *string, unsigned int);
 
 
 //MAIN CODE
