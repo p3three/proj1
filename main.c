@@ -4,39 +4,39 @@
 
 
 
-//function to convert string to all caps
+//function to convert string to all caps//
 char check_all_caps(char *string, unsigned int string_length);
 
 
-//function to convert each character in string from ASCII to a number from 0 to 25
+//function to convert each character in string from ASCII to a number from 0 to 25//
 char convert_from_ASCII(char *string, unsigned int string_length, int *stringN);
 
-//function to convert each character in string from a number from 0 to 25 to ASCII
+//function to convert each character in string from a number from 0 to 25 to ASCII//
 char convert_to_ASCII(char *string, unsigned int string_length, int *stringN);
 
 
 //FUNCTIONS FOR ROTATION CYPHER//
 
-//functon to encode string with rotation cypher
+//functon to encode string with rotation cypher//
 char rotation_encode(char *string, unsigned int string_length, int rotation_cypher);
 
-//function to decode string with rotation cypher
+//function to decode string with rotation cypher//
 char rotation_decode(char *string, unsigned int string_length, int rotation_cypher);
 
-//function to decode string without rotation cypher
+//function to decode string without rotation cypher//
 char rotation_decrypt(char *string, unsigned int string_length);
 
 
 
 //FUNCTIONS FOR SUBSTITUTION CYPHER
 
-//function to encode string with substitution cypher
+//function to encode string with substitution cypher//
 char substitution_encode(char *string, unsigned int string_length, char *substitution_cypher, unsigned int cypher_n);
 
-//function to decode string with substitution cypher
+//function to decode string with substitution cypher//
 char substitution_decode(char *string, unsigned int string_length, char *substitution_cypher, unsigned int cypher_n);
 
-//function to decode string without substitution cypher
+//function to decode string without substitution cypher//
 char substitution_decrypt(char *string, unsigned int string_length);
 
 
@@ -148,7 +148,7 @@ char convert_from_ASCII(char *string, unsigned int string_length, int *stringN)
         
         //if the character at string[n] is an uppercase letter convert
         if ( string[n] >= 65 && string[n] <= 90 ) {
-            stringN[n] = string[n] - 65;
+            stringN[n] = (int)string[n] - 65;
         }
         
     }
@@ -186,7 +186,7 @@ char convert_to_ASCII(char *string, unsigned int string_length, int *stringN)
 
 //FUNCTIONS FOR ROTATION CYPHER//
 
-//functon to encode string with rotation cypher
+//functon to encode string with rotation cypher//
 char rotation_encode(char *string, unsigned int string_length, int rotation_cypher)
 {
     for ( int n = 0 ; n < string_length ; n++ ) {
@@ -199,7 +199,7 @@ char rotation_encode(char *string, unsigned int string_length, int rotation_cyph
 }
 
 
-//function to decode string with rotation cypher
+//function to decode string with rotation cypher//
 char rotation_decode(char *string, unsigned int string_length, int rotation_cypher)
 {
     for ( int n = 0 ; n < string_length ; n++ ) {
@@ -212,7 +212,7 @@ char rotation_decode(char *string, unsigned int string_length, int rotation_cyph
 }
 
 
-//function to decode string without rotation cypher
+//function to decode string without rotation cypher//
 char rotation_decrypt(char *string, unsigned int string_length)
 {
     
