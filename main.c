@@ -103,17 +103,31 @@ int main() {
     char substitution_cypher[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
 
  
-    if ( fscanf(INPUT,"#KEY: %d", &rotation_cypher) ) {
-        printf("Rotation Key is: %d\n", rotation_cypher); 
-        rewind(INPUT);
+    //read value for rotaion_cypher form INPUT, if sucessful print encryption key to terminal //TODO and set function type    
+    switch ( read_encryption_key_INPUT(&rotation_cypher, substitution_cypher) ) {
+        case 1:
+            printf("CASE 1: Rotation Key\n");
+            break;
+        case 2:
+            printf("CASE 2: Substitution Key\n");
+            break;
+        case 0:
+            printf("CASE 0: ERROR\n");
+            break;
     }
-     else /*if () */{
-        fscanf(INPUT,"#KEY: %s", substitution_cypher);
-        
-        printf("Substitution Key is: %s\n", substitution_cypher);
-        
-        rewind(INPUT);
-    }
+    printf("r=%d\ns=%s\n", rotation_cypher, substitution_cypher);
+//    
+//    if ( fscanf(INPUT,"#KEY: %d", &rotation_cypher) ) {
+//        printf("Rotation Key is: %d\n", rotation_cypher); 
+//        rewind(INPUT);
+//    }
+//     else /*if () */{
+//        fscanf(INPUT,"#KEY: %s", substitution_cypher);
+//        
+//        printf("Substitution Key is: %s\n", substitution_cypher);
+//        
+//        rewind(INPUT);
+//    }
 /*   else {
         printf("ERROR: KEY NOT FOUND");
         
@@ -123,16 +137,15 @@ int main() {
 
 
  
-    //read value for rotaion_cypher form INPUT, if sucessful print encryption key to terminal //TODO and set function tye to 1
+
     
-    read_encryption_key_INPUT(&rotation_cypher, *substitution_cypher)
-    
+    /*
     //declare string as an array of characters 
     char string[1024];  //unused = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
      
     //read string from INPUT
     //TODO function here
-    
+
     
     //? int stringN[1024];
     
@@ -181,31 +194,49 @@ int main() {
 //read encryption key from INPUT
 char read_encryption_key_INPUT(int *rotation_cypher, char *substitution_cypher) {
     
-    switch ( fscanf(INPUT,"#KEY: #%s", &substitution_cypher) ) {
-        
-        case 1:
-            *rotation_cypher = substitution_cypher[0];
-            printf("Key is: %d\n", rotation_cypher);
-            return 1;
-        case 1:
-            
-            *rotation_cypher = substitution_cypher[0];
-            printf("Key is: %d\n", rotation_cypher);
-            return 1;
-        case 26:  
-            fscanf(INPUT, "#%s", &substitution_cypher );
-            return 2;
-        
-        default:
-            printf("ERROR: KEY NOT FOUND\n");
-            return 0;
-    } 
+    //declare FILE INPUT
+    FILE *INPUT;
+ 
+    INPUT = fopen("INPUT","r");
+
+    if ( INPUT == NULL ) {
+        perror("fopen()");
+    }
+    
+    int read = 0;
+    
+    read = fscanf(INPUT,"#KEY: %d", rotation_cypher);            //if rotation key
+    rewind(INPUT);  //return curser to start of file
+    
+    if (read > 0) {
+        printf("Rotation Key is: %d\n", *rotation_cypher);
+        return 1;
+    }
+    
+    read = fscanf(INPUT,"#KEY: %s", substitution_cypher);
+    rewind(INPUT);  //return curser to start of file
+    
+    if (read > 0) {  //if substitution key
+        printf("Substitution Key is: %s\n", substitution_cypher);
+        return 2;
+    }
+                                                                //if no valid key
+    printf("ERROR: KEY NOT FOUND\n");
+    return 0;
 }
 
 
 //function to read string from INPUT 
 unsigned int input_string(char *string, unsigned int string_length) 
 { 
+    FILE *INPUT;
+    
+    INPUT = fopen("INPUT","r");
+
+    if ( INPUT == NULL ) {
+        perror("fopen()");
+    }
+    
     int n = 0;  //initiate integer for loop count
     
     do { 
@@ -228,14 +259,14 @@ unsigned int input_string(char *string, unsigned int string_length)
      
     if ( n < string_length ) {
     
-        string[(string_lenght)] = 0;
+        string[(string_length)] = 0;
         
         string_length = n;
         
         return string_length;
     } 
      else {
-        string[(string_lenght)] = 0;
+        string[(string_length)] = 0;
         
         return 0; 
     }
