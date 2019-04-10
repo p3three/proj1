@@ -230,7 +230,7 @@ unsigned int read_string(char *string, unsigned int string_length)
     }
     printf("TEST_COUNT: %d\n",count);
     
-    for ( count = 0 ; feof(INPUT) == 0 ; count++) {  //until end of file reached 
+    for ( count = 0 ; ( feof(INPUT) == 0 ) || ( count < string_length ) ; count++) {  //until end of file reached 
         
         char c;
         
