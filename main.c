@@ -2,18 +2,20 @@
  
 #include <string.h>
 
+//for isspace// #include <ctype.h>
+
  
  
 //FUNCTIONS TO READ FROM INPUT/
 
  
 //read encryption key from INPUT 
-char read_encryption_key_INPUT(int *rotation_cypher, char *substitution_cypher);
+char read_encryption_key(int *rotation_cypher, char *substitution_cypher);
 
- 
+/*unused
 //read encryption key from terminal
 char read_encryption_key_terminal;
-
+*/
  
 //read string from INPUT 
 unsigned int read_string(char *string, unsigned int string_length);
@@ -93,72 +95,52 @@ int main() {
     if ( OUTPUT == NULL ) {
         perror("fopen()");
     }
-
-
-
+    
+    
+    
     //declare rotation_cypher as an integer
     int rotation_cypher = 0;
-
+    
     //declare array to hold substitution cypher
     char substitution_cypher[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
-
- 
-    //read value for rotaion_cypher form INPUT, if sucessful print encryption key to terminal //TODO and set function type    
-    switch ( read_encryption_key_INPUT(&rotation_cypher, substitution_cypher) ) {
+    
+    
+    //read value for cypher form INPUT, if sucessful print encryption key to terminal //TODO// and set function type    
+    char cypher_type = 0;
+    
+    switch ( read_encryption_key(&rotation_cypher, substitution_cypher) ) {
         case 1:
-            printf("CASE 1: Rotation Key\n");
+            printf("CASE_1: ROTATION_KEY\n");
+            cypher_type = 1;
             break;
         case 2:
-            printf("CASE 2: Substitution Key\n");
+            printf("CASE_2: SUBSTITUTION_KEY\n");
+            cypher_type = 2;
             break;
         case 0:
-            printf("CASE 0: ERROR\n");
+            printf("CASE_0: ERROR\n");
             break;
     }
-    printf("r=%d\ns=%s\n", rotation_cypher, substitution_cypher);
-//    
-//    if ( fscanf(INPUT,"#KEY: %d", &rotation_cypher) ) {
-//        printf("Rotation Key is: %d\n", rotation_cypher); 
-//        rewind(INPUT);
-//    }
-//     else /*if () */{
-//        fscanf(INPUT,"#KEY: %s", substitution_cypher);
-//        
-//        printf("Substitution Key is: %s\n", substitution_cypher);
-//        
-//        rewind(INPUT);
-//    }
-/*   else {
-        printf("ERROR: KEY NOT FOUND");
-        
-        rewind(INPUT);
-    }
-*/
-
-
- 
-
+    printf("CYPHER_TYPE: %d\n", cypher_type);
     
-    /*
-    //declare string as an array of characters 
-    char string[1024];  //unused = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
-     
-    //read string from INPUT
-    //TODO function here
-
-    
-    //? int stringN[1024];
-    
+    //declare string //unused// as an array of characters 
+    char string[1024];  //unused// = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
     
     //get number of characters in string 
     unsigned int string_length = strlen(string);
+
+    //read string from INPUT
+    string_length = read_string(string, string_length);
+    printf("STRING_LENGHT: %d\n", string_length);
     
-    
+/*
     //convert to //convert string to all caps 
     check_all_caps(string, string_length);
     
     
     //verify string is valid (A,B,C,... )
+    
+    //? int stringN[1024];
     
     //convert each character in string from ASCII to a number from 1 to 25
     convert_from_ASCII(string, string_length, stringN);
@@ -178,21 +160,21 @@ int main() {
      
     printf("The encrypted string is: %s\n", string);
      
-    */return 0; 
+*/  return 0; 
 }
 //************************************************//
 
 
- 
+
                 //END OF MAIN CODE//
 
 
- 
+
 //************************************************//
- 
+
 
 //read encryption key from INPUT
-char read_encryption_key_INPUT(int *rotation_cypher, char *substitution_cypher) {
+char read_encryption_key(int *rotation_cypher, char *substitution_cypher) {
     
     //declare FILE INPUT
     FILE *INPUT;
@@ -209,15 +191,16 @@ char read_encryption_key_INPUT(int *rotation_cypher, char *substitution_cypher) 
     rewind(INPUT);  //return curser to start of file
     
     if (read > 0) {
-        printf("Rotation Key is: %d\n", *rotation_cypher);
+        printf("KEY_IS: %d\n", *rotation_cypher);
         return 1;
     }
     
     read = fscanf(INPUT,"#KEY: %s", substitution_cypher);
     rewind(INPUT);  //return curser to start of file
     
-    if (read > 0) {  //if substitution key
-        printf("Substitution Key is: %s\n", substitution_cypher);
+    if ( ( read > 0 ) && ( substitution_cypher[0] != '#' ) ) {  //if substitution key
+        //TODO// verify key
+        printf("KEY_IS: %s\n", substitution_cypher);
         return 2;
     }
                                                                 //if no valid key
@@ -227,7 +210,7 @@ char read_encryption_key_INPUT(int *rotation_cypher, char *substitution_cypher) 
 
 
 //function to read string from INPUT 
-unsigned int input_string(char *string, unsigned int string_length) 
+unsigned int read_string(char *string, unsigned int string_length) 
 { 
     FILE *INPUT;
     
@@ -237,36 +220,37 @@ unsigned int input_string(char *string, unsigned int string_length)
         perror("fopen()");
     }
     
-    int n = 0;  //initiate integer for loop count
+    int count = 0;  //initiate integer for counting loops
+    int c = 0;
     
-    do { 
+    for ( count = 0 ; count < 100 ; count++ ) {
+        if ( fscanf(INPUT,"#INPUT: %d", c) != 0 ) {
+            break;
+        }
+    }
+    printf("TEST_COUNT: %d\n",count);
+    
+    for ( count = 0 ; feof(INPUT) == 0 ; count++) {  //until end of file reached 
+        
         char c;
-         
+        
         fscanf(INPUT,"%c", &c);
         
-        string[n] = c;
+        string[count] = c;
+        string[count+1] = 0;
         
-        n++;
-    } while ( feof(INPUT) == 0 );  //while end of file not reached
-
-
-//to read string???
-//
-//      int n = 0;
-//      for ( n = 0 ; feof == 0 ; n++) {
-//          fscanf(INPUT, "%c", substitution_sypher[n]);
-//      }
-     
-    if ( n < string_length ) {
+        count++;
+    }
+    clearerr(INPUT);
     
-        string[(string_length)] = 0;
-        
-        string_length = n;
-        
-        return string_length;
+    printf("STRING_IS: %s\n", string);
+    
+     
+    if ( count < string_length ) {
+        return count;
     } 
      else {
-        string[(string_length)] = 0;
+        string[string_length] = 0;
         
         return 0; 
     }
