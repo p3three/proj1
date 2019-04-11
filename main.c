@@ -110,18 +110,21 @@ int main() {
     
     switch ( read_encryption_key(&rotation_cypher, substitution_cypher) ) {
         case 1:
-            printf("CASE_1: ROTATION_KEY\n");
+            printf("ROTATION_KEY: %d\n", rotation_cypher);
             cypher_type = 1;
             break;
         case 2:
-            printf("CASE_2: SUBSTITUTION_KEY\n");
+            printf("SUBSTITUTION_KEY: %s\n", substitution_cypher);
             cypher_type = 2;
             break;
         case 0:
-            printf("CASE_0: ERROR\n");
+            printf("CASE: ERROR\n");
             break;
     }
-    printf("CYPHER_TYPE: %d\n", cypher_type);
+    if ( cypher_type != 0 ) {
+        printf("CYPHER_TYPE: %d\n", cypher_type);
+    }
+
     
     //declare string //unused// as an array of characters 
     char string[1024];  //unused// = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
@@ -186,26 +189,48 @@ char read_encryption_key(int *rotation_cypher, char *substitution_cypher) {
     }
     
     int read = 0;
+    char rtn = 0;
+    unsigned int count = 0;
     
-    read = fscanf(INPUT,"#KEY: %d", rotation_cypher);            //if rotation key
-    rewind(INPUT);  //return curser to start of file
+    read = fscanf(INPUT,"#KEY: %d\n", rotation_cypher);
     
-    if (read > 0) {
-        printf("KEY_IS: %d\n", *rotation_cypher);
-        return 1;
+    if ( read != 0 ) {
+        rtn = 1;
     }
-    
-    read = fscanf(INPUT,"#KEY: %s", substitution_cypher);
-    rewind(INPUT);  //return curser to start of file
-    
-    if ( ( read > 0 ) && ( substitution_cypher[0] != '#' ) ) {  //if substitution key
-        //TODO// verify key
-        printf("KEY_IS: %s\n", substitution_cypher);
-        return 2;
+     else {
+        for ( count = 0 ; count < 100 ; count++ ) {            //if rotation key
+            read = fscanf(INPUT,"#KEY: %d\n", rotation_cypher);
+            if ( read != 0 ) {
+                rtn = 1;
+                printf("ROT\n");
+                break;
+            }
+        }
     }
-                                                                //if no valid key
-    printf("ERROR: KEY NOT FOUND\n");
-    return 0;
+
+    
+    if (rtn == 0 ) {
+        rewind(INPUT);  //return curser to start of file
+        
+        for ( count = 0 ; count < 100 ; count++ ) {
+            if ( fscanf(INPUT,"#KEY: %s[\n]", substitution_cypher) != 0 ) {
+                read = 2;
+                printf("SUB\n");
+                break;
+            }
+        }
+
+        int sub1 = substitution_cypher[0];
+        /*int subL = substitution_cypher[25];*/
+        if ( ( read == 2 ) && ( sub1 != '#' ) /*&& ( subL == 0 )*/ ) {  //if substitution key
+            rtn = 2;
+        }
+         else if ( read == 2 ) {
+            rtn = 0;
+        }
+    }
+    rewind(INPUT);  //return curser to start of file
+    return rtn;  //if no valid key
 }
 
 
@@ -221,22 +246,23 @@ unsigned int read_string(char *string, unsigned int string_length)
     }
     
     int count = 0;  //initiate integer for counting loops
-    int c = 0;
+    unsigned int rtn = 0;
     
-    for ( count = 0 ; count < 100 ; count++ ) {
-        if ( fscanf(INPUT,"#INPUT: %d", c) != 0 ) {
+    char str[26];
+    
+    for ( count = 1 ; count > 100 ; count++ ) {
+        rewind(INPUT);
+        if ( fscanf(INPUT,"#KEY: %s[\n]", str) != 0 ) {
             break;
         }
     }
     printf("TEST_COUNT: %d\n",count);
+
     
-    for ( count = 0 ; ( feof(INPUT) == 0 ) || ( count < string_length ) ; count++) {  //until end of file reached 
+    for ( count = 0 ; string[count] != '#' ; count++) {  //until end of file reached 
+               
+        fscanf(INPUT,"%c", &string[count]);
         
-        char c;
-        
-        fscanf(INPUT,"%c", &c);
-        
-        string[count] = c;
         string[count+1] = 0;
         
         count++;
@@ -247,16 +273,16 @@ unsigned int read_string(char *string, unsigned int string_length)
     
      
     if ( count < string_length ) {
-        return count;
+        rtn = count;
     } 
      else {
         string[string_length] = 0;
-        
-        return 0; 
+        rtn = 0;
     }
+    return rtn;
 }
 
-
+/*
 //function to convert string to all caps
 char check_all_caps(char *string, unsigned int string_length)
 {
@@ -314,7 +340,6 @@ char convert_to_ASCII(char *string, unsigned int string_length, int *stringN)
 }
 
 
-
 //FUNCTIONS FOR ROTATION CYPHER//
 
 //functon to encode string with rotation cypher//
@@ -343,12 +368,12 @@ char rotation_decode(char *string, unsigned int string_length, int rotation_cyph
 }
 
 
+
 //function to decode string without rotation cypher//
 char rotation_decrypt(char *string, unsigned int string_length)
 {
     return 1;
 }
-
 
 
 //FUNCTIONS FOR SUBSTITUTION CYPHER
@@ -361,7 +386,7 @@ char substitution_decode(char *string, unsigned int string_length, char *substit
 
 //function to decode string without substitution cypher
 char substitution_decrypt(char *string, unsigned int string_length);
-
+*/
 
 
 
