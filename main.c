@@ -128,13 +128,18 @@ int main() {
     
     //declare string //unused// as an array of characters 
     char string[1024];  //unused// = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
+    string[1024] = 0;
     
     //get number of characters in string 
     unsigned int string_length = strlen(string);
 
     //read string from INPUT
-    string_length = read_string(string, string_length);
-    printf("STRING_LENGHT: %d\n", string_length);
+    read_string(string, string_length);
+    
+    for ( int i = 0 ; i < string_length ; i++ ) {
+        printf("STRING: %c\n", string[i]);
+    }
+
     
 /*
     //convert to //convert string to all caps 
@@ -199,7 +204,7 @@ char read_encryption_key(int *rotation_cypher, char *substitution_cypher) {
     }
      else {
         for ( count = 0 ; count < 100 ; count++ ) {            //if rotation key
-            read = fscanf(INPUT,"#KEY: %d\n", rotation_cypher);
+            read = fscanf(INPUT,"#KEY: %d[\n]", rotation_cypher);
             if ( read != 0 ) {
                 rtn = 1;
                 printf("ROT\n");
@@ -245,20 +250,24 @@ unsigned int read_string(char *string, unsigned int string_length)
         perror("fopen()");
     }
     
-    int count = 0;  //initiate integer for counting loops
-    unsigned int rtn = 0;
+    int count = -1;  //initiate integer for counting loops
+    unsigned int rtn = 0; //initiate variable to hold value for return
     
-    char str[26];
+    char str[1024];
     
-    for ( count = 1 ; count > 100 ; count++ ) {
-        rewind(INPUT);
-        if ( fscanf(INPUT,"#KEY: %s[\n]", str) != 0 ) {
-            break;
+    rewind(INPUT);
+    
+    if ( ( fscanf(INPUT,"#INPUT:\n%s[\n]", str) ) == 0 ) {
+        for ( count = 0 ; count < 100 ; count++ ) {
+            fscanf(INPUT,"#KEY: %s[\n]",str);
+            if ( str[count] != 0) {
+                break;
+            }
         }
     }
-    printf("TEST_COUNT: %d\n",count);
-
     
+    printf("TEST_COUNT: %d\n",count);
+        
     for ( count = 0 ; string[count] != '#' ; count++) {  //until end of file reached 
                
         fscanf(INPUT,"%c", &string[count]);
