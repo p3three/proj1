@@ -28,20 +28,12 @@ unsigned int read_string(char *string, const unsigned int string_length);
 char check_all_caps(char *string, const unsigned int string_length);
 
  
-//function to convert each character in string from ASCII to a number from 0 to 25// 
-char convert_from_ASCII(char *string, const unsigned int string_length, int *stringN);
-
-
-//function to convert each character in string from a number from 0 to 25 to ASCII//
-char convert_to_ASCII(char *string, const unsigned int string_length, int *stringN);
-
-
 
 //FUNCTIONS FOR ROTATION CYPHER//
 
  
 //functon to encode string with rotation cypher//
-char rotation_encode(int *stringN, const unsigned int string_length, int rotation_key);
+char rotation_encode(char *string, const unsigned int string_length, int rotation_key);
 
 
 //function to decode string with rotation cypher// 
@@ -56,11 +48,11 @@ char rotation_decrypt(char *string, const unsigned int string_length);
 
  
 //function to encode string with substitution cypher// 
-char substitution_encode(char *string, const unsigned int string_length, char *substitution_key, unsigned int cypher_n);
+char substitution_encode(char *string, const unsigned int string_length, char *substitution_key);
 
  
 //function to decode string with substitution cypher//
-char substitution_decode(char *string, const unsigned int string_length, char *substitution_key, unsigned int cypher_n);
+char substitution_decode(char *string, const unsigned int string_length, char *substitution_key);
 
 
 //function to decode string without substitution cypher// 
@@ -115,6 +107,7 @@ int main() {
             cypher_type = 1;
             break;
         case 2:
+            check_all_caps(substitution_key, strlen(substitution_key));
             printf("SUBSTITUTION_KEY: %s\n", substitution_key);
             cypher_type = 2;
             break;
@@ -129,7 +122,7 @@ int main() {
 
     
     //declare string //unused// as an array of characters 
-    char stringINPUT[] = "TVU TVAOTH: AOL KHAH IYVBNOA AV BZ IF AOL IVAOHU ZWPLZ WPUWVPUAZ AOL LEHJA SVJHAPVU VM AOL LTWLYVY'Z ULD IHAASL ZAHAPVU. DL HSZV RUVD AOHA AOL DLHWVU ZFZALTZ VM AOPZ KLHAO ZAHY HYL UVA FLA VWLYHAPVUHS. DPAO AOL PTWLYPHS MSLLA ZWYLHK AOYVBNOVBA AOL NHSHEF PU H CHPU LMMVYA AV LUNHNL BZ, PA PZ YLSHAPCLSF BUWYVALJALK. IBA TVZA PTWVYAHUA VM HSS, DL'CL SLHYULK AOHA AOL LTWLYVY OPTZLSM PZ WLYZVUHSSF VCLYZLLPUN AOL MPUHS ZAHNLZ VM AOL JVUZAYBJAPVU VM AOPZ KLHAO ZAHY. THUF IVAOHUZ KPLK AV IYPUN BZ AOPZ PUMVYTHAPVU.";
+    char stringINPUT[] = "TvU TVAOTH: AOL KHAH IYVBNOA AV BZ IF AOL IVAOHU ZWPLZ WPUWVPUAZ AOL LEHJA SVJHAPVU VM AOL LTWLYVY'Z ULD IHAASL ZAHAPVU. DL HSZV RUVD AOHA AOL DLHWVU ZFZALTZ VM AOPZ KLHAO ZAHY HYL UVA FLA VWLYHAPVUHS. DPAO AOL PTWLYPHS MSLLA ZWYLHK AOYVBNOVBA AOL NHSHEF PU H CHPU LMMVYA AV LUNHNL BZ, PA PZ YLSHAPCLSF BUWYVALJALK. IBA TVZA PTWVYAHUA VM HSS, DL'CL SLHYULK AOHA AOL LTWLYVY OPTZLSM PZ WLYZVUHSSF VCLYZLLPUN AOL MPUHS ZAHNLZ VM AOL JVUZAYBJAPVU VM AOPZ KLHAO ZAHY. THUF IVAOHUZ KPLK AV IYPUN BZ AOPZ PUMVYTHAPVU.";
     unsigned int string_length_INPUT = strlen(stringINPUT);
     
         char string[1024];
@@ -157,31 +150,19 @@ int main() {
     printf("\n");
 
     
-/*
     //convert to //convert string to all caps 
     check_all_caps(string, string_length);
-    
-    
-    //verify string is valid (A,B,C,... )
-*/
-    
-    int stringN[1024];
-    
-    //convert each character in string from ASCII to a number from 1 to 25
-    convert_from_ASCII(string, string_length, stringN);
+    //verify string is valid (A,B,C,... )  
     
     switch (cypher_type) {
         case 1:
             printf("CASE_1: ROTATION_CYPHER\n");
             //encrypt with rotation cypher
-            rotation_encode(stringN, string_length, rotation_key);         //TODO change to rotation_cypher
+            rotation_encode(string, string_length, rotation_key);         //TODO change to rotation_cypher
             break;
         case 2:
             printf("CASE_2: SUBSTITUTION_CYPHER\n");
-            /*
-            //encrypt with substitution cypher
-            substitution_cypher(string, string_length, substitution_key); //TODO change to substitution_cypher
-            */
+            substitution_encode(string, string_length, substitution_key); //TODO change to substitution_cypher
            break;
         case 0:
             printf("CASE_0: DECRYPT\n");
@@ -193,10 +174,16 @@ int main() {
     }
     
     switch (cypher_type) {
-        def;
+        case 1:
+            rotation_decode(string, string_length, rotation_key);
+            break;
+        case 2:
+            break;
+            substitution_decode(string, string_length, substitution_key);
+        default:
+            break;
+        
     }
-    //convert each character in string from a number from 0 to 25 to ASCII
-    convert_to_ASCII(string, string_length, stringN);
     
     
     //print cypher key and encrypted string to OUTPUT
@@ -211,11 +198,7 @@ int main() {
 }
 //************************************************//
 
-
-
                 //END OF MAIN CODE//
-
-
 
 //************************************************//
 
@@ -224,11 +207,11 @@ int main() {
 char read_encryption_key(int *rotation_key, char *substitution_key) {
     
     //declare FILE INPUT
-    FILE *INPUT;
+    FILE *INPUT_KEY;
  
-    INPUT = fopen("INPUT","r");
+    INPUT_KEY = fopen("INPUT_KEY","r");
 
-    if ( INPUT == NULL ) {
+    if ( INPUT_KEY == NULL ) {
         perror("fopen()");
     }
     
@@ -237,7 +220,7 @@ char read_encryption_key(int *rotation_key, char *substitution_key) {
     unsigned int count = 0;
     
     //read = fscanf(INPUT,"#KEY: %d\n", rotation_key);  //TODO ?convert to 
-    rewind(INPUT);
+    rewind(INPUT_KEY);
 /*    while( ( fscanf(INPUT,"#KEY: %d", rotation_key ) == 0 ) && ( count < 100 ) ) {
         count++;  //TODO increment readfrom pos
         }
@@ -254,22 +237,22 @@ char read_encryption_key(int *rotation_key, char *substitution_key) {
     }
      else {
         for ( count = 0 ; count < 100 ; count++ ) {            //if rotation key
-            read = fscanf(INPUT,"#KEY: %d[\n]", rotation_key);
+            read = fscanf(INPUT_KEY,"#KEY: %d[\n]", rotation_key);
             if ( read != 0 ) {
                 rtn = 1;
-                printf("ROT\n");
+                //printf("ROT\n");  //testing
                 break;
             }
         }
     }
     
     if (rtn == 0 ) {
-        rewind(INPUT);  //return curser to start of file
+        rewind(INPUT_KEY);  //return curser to start of file
         
         for ( count = 0 ; count < 100 ; count++ ) {
-            if ( fscanf(INPUT,"#KEY: %s[\n]", substitution_key) != 0 ) {
+            if ( fscanf(INPUT_KEY,"#KEY: %s[\n]", substitution_key) != 0 ) {
                 read = 2;
-                printf("SUB\n");
+                //printf("SUB\n");  //testing
                 break;
             }
         }
@@ -283,7 +266,7 @@ char read_encryption_key(int *rotation_key, char *substitution_key) {
             rtn = 0;
         }
     }
-    rewind(INPUT);  //return curser to start of file
+    rewind(INPUT_KEY);  //return curser to start of file
     return rtn;  //if no valid key
 }
 
@@ -347,67 +330,7 @@ char check_all_caps(char *string, const unsigned int string_length)
             string[n] -= 32;
         }      
     }
-    printf("CHECK_ALL_CAPS:\n");
-    for ( int n = 0 ; n < string_length ; n++ ) {
-        printf("%d", (int)string[n]);
-    }
-    printf("\n\n");
-    return 1;
-}
-
-
-
-//function to convert each character in string from ASCII to a number from 1 to 25
-char convert_from_ASCII(char *string, const unsigned int string_length, int *stringN)
-{
-    char alphabet_0to25[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
-    
-    //convert each character in string from ASCII value to number from 0 to 25
-    for ( int n = 0 ; n < string_length ; n++ ) {
-        for ( int i = 0 ; i < 26 ; i++ ) {
-            if ( string[n] == alphabet_0to25[i] ) {
-                stringN[n] = ( i + 1 );
-            }
-        }
-    }
-    for ( int n = 0 ; n < string_length ; n++ ) {
-        if ( ( stringN[n] > 0 ) && ( stringN[n] < 10 ) ) {
-            printf("'");
-            printf("0%d",stringN[n]);
-            printf("' ");
-        }
-         else if ( ( stringN[n] >= 10 ) && ( stringN[n] <= 26 ) ) {
-            printf("'");
-            printf("%d", stringN[n]);
-            printf("' ");
-        }
-         else {
-            printf("'");
-            printf("00");
-            printf("' ");
-        }
-
-    }
-    printf("\n");
-    return 1;
-}
-
-//function to convert each character in string from a number from 0 to 25 to ASCII
-char convert_to_ASCII(char *string, const unsigned int string_length, int *stringN) 
-{
-    char alphabet_0to25[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
-    
-    //convert each character in string from number from 1 to 26 to ASCII
-    for ( int n = 0 ; n < string_length ; n++ ) {
-        for ( int i = 0 ; i < 26 ; i++ ) {
-            if ( stringN[n] == ( i + 1 ) ) {
-                string[n] = alphabet_0to25[i];
-            }
-            else {
-                string[n] = 0;
-            }
-        }
-    }
+    printf("ALL_CAPS:\n");
     for ( int n = 0 ; n < string_length ; n++ ) {
         printf(" '");
         printf("%c", string[n]);
@@ -430,55 +353,84 @@ char rotation_cypher(char *string, const unsigned int string_length, int rotatio
 }
 
 //functon to encode string with rotation cypher//
-char rotation_encode(int *stringN, const unsigned int string_length, int rotation_key)
+char rotation_encode(char *string, const unsigned int string_length, int rotation_key)
 {
+    int rotation = ( 26 + rotation_key ) % 26;
+    
     for ( int n = 0 ; n < string_length ; n++ ) {
-        if ( stringN[n] > 0 && stringN[n] <= 26 ) {
-            stringN[n] = ( ( stringN[n] + 26 ) + rotation_key ) % 26;
+        if ( string[n] >= 65 && string[n] <= 90 ) {
+            string[n] += rotation ;
+            if ( string[n] > 90 ) {
+                string[n] -= 26;
+            }
+            else if ( string[n] < 65 ) {
+                string[n] += 26;
+            }
         }
-    }
+    }    
     for ( int n = 0 ; n < string_length ; n++ ) {
-        if ( ( stringN[n] > 0 ) && ( stringN[n] < 10 ) ) {
-            printf("'");
-            printf("0%d",stringN[n]);
+            printf(" '");
+            printf("%c",string[n]);
             printf("' ");
-        }
-         else if ( ( stringN[n] >= 10 ) && ( stringN[n] <= 26 ) ) {
-            printf("'");
-            printf("%d", stringN[n]);
-            printf("' ");
-        }
-         else {
-            printf("'");
-            printf("00");
-            printf("' ");
-        }
-
     }
     printf("\n");
     return 1;
 }
 
 
+
 //function to decode string with rotation cypher//
 char rotation_decode(char *string, const unsigned int string_length, int rotation_key)
 {
+    int rotation = ( 26 - rotation_key ) % 26;
+    
     for ( int n = 0 ; n < string_length ; n++ ) {
-        if ( string[n] >= 0 && string[n] <= 25 ) {
-            string[n] = ( ( string[n] + 26 ) - rotation_key ) % 26;
+        if ( string[n] >= 65 && string[n] <= 90 ) {
+            string[n] += rotation ;
+            if ( string[n] > 90 ) {
+                string[n] -= 26;
+            }
+            else if ( string[n] < 65 ) {
+                string[n] += 26;
+            }
         }
     }    
-    printf("%s\n", string);
+    for ( int n = 0 ; n < string_length ; n++ ) {
+            printf(" '");
+            printf("%c",string[n]);
+            printf("' ");
+    }
+    printf("\n");
     return 1;
 }
 
-/*
+
 
 //FUNCTIONS FOR SUBSTITUTION CYPHER
 
 //function to encode string with substitution cypher
-char substitution_encode(char *string, const unsigned int string_length, char *substitution_key, unsigned int cypher_n);
+char substitution_encode(char *string, const unsigned int string_length, char *substitution_key) {
+    char alphabet_0to25[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
+    
+    for ( int n = 0 ; n < string_length ; n++ ) {        //for each character in string
+        if ( string[n] >= 65 && string[n] <= 90 ) {      //if it is a capital
+            for ( int i = 0 ; i < 26 ; i++ ) {           //...
+                if ( string[n] == alphabet_0to25[i] ) {  //work out what number of the alphabet it is
+                    string[n] = substitution_key[i];     //and substitute the character at the same place in the key
+                }
+            }
+        }
+    }
+    for ( int n = 0 ; n < string_length ; n++ ) {
+            printf(" '");
+            printf("%c",string[n]);
+            printf("' ");
+    }
+    printf("\n");
+    return 1;
+}
 
+/*
 //function to decode string with substitution cypher
 char substitution_decode(char *string, const unsigned int string_length, char *substitution_key, unsigned int cypher_n);
 
@@ -487,6 +439,8 @@ char substitution_decrypt(char *string, const unsigned int string_length);
 
 
 //FUNCTIONS TO DECRYPT WITHOUT KEY
-char substitution_cypher(string, const unsigned int string_length, substitution_key);
+char roatation_decrypt(string, const unsigned int string_length, *rotation_key) { ;}
+
+char substitution_cypher(string, const unsigned int string_length, *substitution_key) { ;}
 
 */
