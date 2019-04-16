@@ -120,6 +120,7 @@ int main() {
             break;
         case 0:
             printf("CASE: DECRYPT\n");
+            cypher_type = 0;
             break;
     }
     if ( cypher_type != 0 ) {
@@ -191,7 +192,9 @@ int main() {
            break;
     }
     
-    
+    switch (cypher_type) {
+        def;
+    }
     //convert each character in string from a number from 0 to 25 to ASCII
     convert_to_ASCII(string, string_length, stringN);
     
@@ -235,7 +238,7 @@ char read_encryption_key(int *rotation_key, char *substitution_key) {
     
     //read = fscanf(INPUT,"#KEY: %d\n", rotation_key);  //TODO ?convert to 
     rewind(INPUT);
-    while( ( fscanf(INPUT,"#KEY: %d\n", rotation_key ) == 0 ) && ( count < 100 ) ) {
+/*    while( ( fscanf(INPUT,"#KEY: %d", rotation_key ) == 0 ) && ( count < 100 ) ) {
         count++;  //TODO increment readfrom pos
         }
     
@@ -245,7 +248,7 @@ char read_encryption_key(int *rotation_key, char *substitution_key) {
             count++;  //TODO increment readfrom pos
         }
     }
-    /*
+    */
     if ( read != 0 ) {
         rtn = 1;
     }
@@ -259,7 +262,6 @@ char read_encryption_key(int *rotation_key, char *substitution_key) {
             }
         }
     }
-    */
     
     if (rtn == 0 ) {
         rewind(INPUT);  //return curser to start of file
@@ -395,7 +397,7 @@ char convert_to_ASCII(char *string, const unsigned int string_length, int *strin
 {
     char alphabet_0to25[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
     
-    //convert each character in string from number from 0 to 25 to ASCII value
+    //convert each character in string from number from 1 to 26 to ASCII
     for ( int n = 0 ; n < string_length ; n++ ) {
         for ( int i = 0 ; i < 26 ; i++ ) {
             if ( stringN[n] == ( i + 1 ) ) {
