@@ -310,11 +310,11 @@ unsigned int read_string(char *string, unsigned int string_length)
             fscanf(INPUT,"%c", &string[count]);
             count_2++;
             if ( ( string[count] == 10 ) || ( string[count]  == 12 ) || ( string[count] == 13 ) ) {
+                string[count] = 0;
                 break;
             }
         }
     }
-
     
     
     printf("INPUT: TEST_COUNT: %d\n",count_2);
