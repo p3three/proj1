@@ -18,7 +18,7 @@ char read_encryption_key_terminal;
 */
  
 //read string from INPUT 
-unsigned int read_string(char *string, const unsigned int string_length);
+unsigned int read_string(char *string, unsigned int string_length);
 
 //FUNCTIONS TO WRITE TO OUTPUT// 
 //TODO//
@@ -109,6 +109,7 @@ int main() {
             cypher_type = 1;
             break;
         case 2:
+            printf("SUBSTITUTION_KEY");
             check_all_caps(substitution_key, strlen(substitution_key));
             printf("SUBSTITUTION_KEY: %s\n", substitution_key);
             cypher_type = 2;
@@ -121,42 +122,30 @@ int main() {
     if ( cypher_type != 0 ) {
         printf("CYPHER_TYPE: %d\n", cypher_type);
     }
-
     
-    //declare string //unused// as an array of characters 
-    char stringINPUT[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ: TvU TVAOTH: AOL KHAH IYVBNOA AV BZ IF AOL IVAOHU ZWPLZ WPUWVPUAZ AOL LEHJA SVJHAPVU VM AOL LTWLYVY'Z ULD IHAASL ZAHAPVU. DL HSZV RUVD AOHA AOL DLHWVU ZFZALTZ VM AOPZ KLHAO ZAHY HYL UVA FLA VWLYHAPVUHS. DPAO AOL PTWLYPHS MSLLA ZWYLHK AOYVBNOVBA AOL NHSHEF PU H CHPU LMMVYA AV LUNHNL BZ, PA PZ YLSHAPCLSF BUWYVALJALK. IBA TVZA PTWVYAHUA VM HSS, DL'CL SLHYULK AOHA AOL LTWLYVY OPTZLSM PZ WLYZVUHSSF VCLYZLLPUN AOL MPUHS ZAHNLZ VM AOL JVUZAYBJAPVU VM AOPZ KLHAO ZAHY. THUF IVAOHUZ KPLK AV IYPUN BZ AOPZ PUMVYTHAPVU.";
-    unsigned int string_length_INPUT = strlen(stringINPUT);
     
-        char string[1024];
-    for ( int n = 0 ; n < string_length_INPUT ; n++ ) {
-        string[n] = stringINPUT[n];
-    }
+    
+    char string[1024];
+    unsigned int string_length = 1024;
     /*  //unused//
     char string[1024] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
     */
     
-    //get number of characters in string 
-    unsigned int string_length = strlen(string);
-
     //read string from INPUT
-//    read_string(string, string_length);
+    read_string(string, string_length);
+    
+    
+    //get number of characters in string 
+    string_length = strlen(string);
     
     printf("STRING_LENGTH: %d\n", string_length);
     
-    printf("STRING_");
-    /*
-    for ( int i = 0 ; i < string_length ; i++ ) {
-        printf(" '");
-        printf("%c", string[i]);
-        printf("' ");
-    }
-    printf("\n");
-    */
     
+    printf("STRING_");  //to print "STRING_ALL_CAPS " and then string
     
-    //convert to //convert string to all caps 
+    //to convert string to all caps 
     check_all_caps(string, string_length);
-    //verify string is valid (A,B,C,... )  
+
     
     switch (cypher_type) {
         case 1:
@@ -200,9 +189,18 @@ int main() {
 //    printf("Key is: %d\n", rotation_key);
      
 //    printf("The length of the string is: %d\n", string_length);
-     
-    printf("\nTHE_STRING_IS:\n%s\n", string);
-                                                       
+    
+    printf("\n");
+    printf("ROTATION_KEY: %d\n", rotation_key);
+    printf("SUBSTITUTION_KEY: %s\n", substitution_key);
+    
+    printf("\n");
+    printf("THE_STRING_IS: ");
+    for ( int n = 0 ; n < string_length ; n++ ) {
+        printf("%c", string[n]);
+    }
+    printf("\n");
+
      
     return 0; 
 }
@@ -284,7 +282,7 @@ char read_encryption_key(int *rotation_key, char *substitution_key) {
 
 
 //function to read string from INPUT 
-unsigned int read_string(char *string, const unsigned int string_length) 
+unsigned int read_string(char *string, unsigned int string_length) 
 {
     FILE *INPUT;
     
@@ -294,7 +292,8 @@ unsigned int read_string(char *string, const unsigned int string_length)
         perror("fopen()");
     }
     
-    int count = 0;  //initiate integer for counting loops
+    unsigned int count = 0;  //initiate integer for counting loops
+    unsigned int count_2 = 0; //initiate second integer for counting loops
     unsigned int rtn = 0; //initiate variable to hold value for return
     int scan = 0;
     
@@ -302,16 +301,23 @@ unsigned int read_string(char *string, const unsigned int string_length)
     
     rewind(INPUT);
     
-    //for ( count = 0 ; count < 100 ; count++ ) {
-    scan = fscanf(INPUT,"#INPUT:\n%s", string);
-    while ( ( scan == 0 ) && count < 100 ) {
-        scan = fscanf(INPUT,"#INPUT:\n%s", string);
-        count++;
+    for ( count = 0 ; scan == 0 && count < string_length ; count++ ) {
+        scan = fscanf(INPUT,"#INPUT: %c", &string[0]);
+        
+    }
+    if ( scan != 0 ) {
+        for ( count_2 = 1 ; count < string_length ; count++ ) {
+            fscanf(INPUT,"%c", &string[count]);
+            count_2++;
+            if ( ( string[count] == 10 ) || ( string[count]  == 12 ) || ( string[count] == 13 ) ) {
+                break;
+            }
+        }
     }
 
-  //  }
     
-    printf("TEST_COUNT: %d\n",count);
+    
+    printf("INPUT: TEST_COUNT: %d\n",count_2);
     
     /*
     for ( count = 0 ; string[count] != '#' ; count++) {  //until end of file reached 
@@ -323,9 +329,14 @@ unsigned int read_string(char *string, const unsigned int string_length)
         count++;
     }
     */
-    clearerr(INPUT);
+   
+    //string_length = strlen(string);
     
-    printf("STRING_IS: %s\n", string);
+    printf("THE_STRING_IS: ");
+    for ( int n = 0 ; n < count ; n++ ) {
+        printf("%c", string[n]);
+    }
+    printf("\n");
     
     return rtn;
 }
