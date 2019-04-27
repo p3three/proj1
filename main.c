@@ -10,27 +10,20 @@
 
  
 //read encryption key from INPUT 
-char read_encryption_key(int *rotation_key, char *substitution_key);
+char read_encryption_key(FILE *INPUT_KEY, int *rotation_key, char *substitution_key);
 
-/*unused
-//read encryption key from terminal
-char read_encryption_key_terminal;
-*/
- 
+
 //read string from INPUT 
-unsigned int read_string(char *string, unsigned int string_length);
-
-//FUNCTIONS TO WRITE TO OUTPUT// 
-//TODO//
+unsigned int read_string(FILE *INPUT, char *string, unsigned int string_length);
 
 
-//function to convert string to all caps// 
+//function to convert string to all caps//
 char check_all_caps(char *string, const unsigned int string_length);
 
  
-
 //FUNCTION TO DECRYPT WITHOUT KEY
 char decrypt(char *string, const unsigned int string_length, int *rotation_key, char *substitution_key);
+
 
 //FUNCTIONS FOR ROTATION CYPHER//
 
@@ -42,25 +35,27 @@ char rotation_encode(char *string, const unsigned int string_length, int rotatio
 //function to decode string with rotation cypher// 
 char rotation_decode(char *string, const unsigned int string_length, int rotation_key);
 
- 
+ /*TODO
 //function to decode string without rotation cypher// 
 char rotation_decrypt(char *string, const unsigned int string_length);
-
+*/
 
 //FUNCTIONS FOR SUBSTITUTION CYPHER
-
  
 //function to encode string with substitution cypher// 
 char substitution_encode(char *string, const unsigned int string_length, char *substitution_key);
-
  
 //function to decode string with substitution cypher//
 char substitution_decode(char *string, const unsigned int string_length, char *substitution_key);
 
-
-//function to decode string without substitution cypher// 
+/*TODO*/
+//function to decode string without substitution cypher//
 char substitution_decrypt(char *string, const unsigned int string_length);
 
+
+
+//FUNCTION TO WRITE TO OUTPUT
+char append_OUTPUT(FILE *OUTPUT, char *string, const unsigned int string_length );
 
 
 
@@ -83,6 +78,15 @@ int main() {
     }
 
 
+    FILE *INPUT_KEY;
+ 
+    INPUT_KEY = fopen("INPUT_KEY","r");
+
+    if ( INPUT_KEY == NULL ) {
+        perror("fopen()");
+    }
+
+
     FILE *OUTPUT;
 
     OUTPUT = fopen("OUTPUT","a");
@@ -90,7 +94,6 @@ int main() {
     if ( OUTPUT == NULL ) {
         perror("fopen()");
     }
-    
     
     
     //declare rotation_key as an integer
@@ -103,14 +106,12 @@ int main() {
     //read value for cypher form INPUT, if sucessful print encryption key to terminal //TODO// and set function type    
     char cypher_type = 0;
     
-    switch ( read_encryption_key(&rotation_key, substitution_key) ) {
+    switch ( read_encryption_key(INPUT_KEY, &rotation_key, substitution_key) ) {
         case 1:
             printf("ROTATION_KEY: %d\n", rotation_key);
             cypher_type = 1;
             break;
         case 2:
-            printf("SUBSTITUTION_KEY");
-            check_all_caps(substitution_key, strlen(substitution_key));
             printf("SUBSTITUTION_KEY: %s\n", substitution_key);
             cypher_type = 2;
             break;
@@ -119,70 +120,97 @@ int main() {
             cypher_type = 0;
             break;
     }
-    if ( cypher_type != 0 ) {
-        printf("CYPHER_TYPE: %d\n", cypher_type);
-    }
     
     
     
+    //unused// char string[1024] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
+    char string_IN[1024];
     char string[1024];
+    char string_OUT[1024];
     unsigned int string_length = 1024;
-    /*  //unused//
-    char string[1024] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
-    */
+    
     
     //read string from INPUT
-    read_string(string, string_length);
-    
+    read_string(INPUT, string_IN, string_length);
     
     //get number of characters in string 
-    string_length = strlen(string);
+    string_length = strlen(string_IN);
     
     printf("STRING_LENGTH: %d\n", string_length);
     
-    
-    printf("STRING_");  //to print "STRING_ALL_CAPS " and then string
-    
     //to convert string to all caps 
-    check_all_caps(string, string_length);
-
+    check_all_caps(string_IN, string_length);
     
-    switch (cypher_type) {
-        case 1:
-            //TODO// if ( encoded == FALSE ) {
-            printf("CASE_1: ROTATION_ENCODE\n");
-            //encrypt with rotation cypher
-            rotation_encode(string, string_length, rotation_key);
-            break;
-        case 2:
-            //TODO//if ( encoded == FALSE ) {
-            printf("CASE_2: SUBSTITUTION_ENCODE\n");
-            substitution_encode(string, string_length, substitution_key);
-           break;
-        case 0:
-            //TODO//if ( encoded == FASLE ) {
-            printf("ERROR: ENCODE: CYPHER_NOT_FOUND\n");
-           break;
+    
+    for ( int n = 0 ; n < string_length ; n++ ) {
+        string[n] = string_IN[n];
+        string_OUT[n] = string_IN[n];
     }
     
+    /*TODO
+    //variable for encodedTRUE/FALSE
+    unsigned int encoded = 2;
+    
+    while ( encoded == 2 ) {
+        
+        //declare variable for encode/decode
+        char encode_decode = 'E';  //TODO initialize as 'N'
+        
+        //query user for encrypt / decrypt
+        printf("[E]NCODE/[D]ECODE\n");
+        scanf("%c/n", &encode_decode);
+        
+        if ( encode_decode == 'E' ) {
+            encoded = 0;
+        }
+        else if ( encode_decode == 'D' ) {
+            encoded = 1;
+        }
+        else {
+            printf("ERROR: INVALID_SELECTION");
+        }
+        
+    }*/
+    
     switch (cypher_type) {
+        //TODO// if elseif
         case 1:
-            //TODO//if ( encoded == TRUE ) {
-            printf("CASE_1: ROATION_DECODE\n");
-            rotation_decode(string, string_length, rotation_key);
+            //if ( encoded == 0 ) {
+                fprintf(OUTPUT,"ROTATION_ENCODE:\n");
+                //encrypt with rotation cypher
+                rotation_encode(string, string_length, rotation_key);
+                append_OUTPUT(OUTPUT, string, string_length);
+            //}
+            //else if ( encoded == 1 ) {
+                fprintf(OUTPUT,"\nROATION_DECODE:\n");
+                //decrypt with rotation cypher
+                rotation_decode(string_OUT, string_length, rotation_key);
+                append_OUTPUT(OUTPUT, string_OUT, string_length);
+                fprintf(OUTPUT,"\n\n");
+            //}
             break;
         case 2:
-            //TODO//if ( encoded == TRUE ) {
-            printf("CASE_2: SUBSTITUTION_DECODE\n");
-            substitution_decode(string, string_length, substitution_key);
+            //if ( encoded == 0 ) {
+                fprintf(OUTPUT,"SUBSTITUTION_ENCODE:\n");
+                substitution_encode(string, string_length, substitution_key);
+                append_OUTPUT(OUTPUT, string, string_length);
+            //}
+            //else if ( encoded == 1 ) {
+                fprintf(OUTPUT,"\nSUBSTITUTION_DECODE:\n");
+                substitution_decode(string_OUT, string_length, substitution_key);
+                append_OUTPUT(OUTPUT, string_OUT, string_length);
+                fprintf(OUTPUT,"\n\n");
+            //}
             break;
-        default:
-            //TODO//if ( encoded == TRUE ) {
-            printf("CASE_0: DECRYPT\n");
+        case 0:
+            printf("ERROR: CYPHER_NOT_FOUND\n");
+            fprintf(OUTPUT,"\nERROR: CYPHER_NOT_FOUND\n");
+            fprintf(OUTPUT,"\n");
+            //printf("CASE_0: DECRYPT\n");
             //TODO// decrypt(string, string_length, &rotation_key, substitution_key);
             break;
-        
     }
+    
     
     
     //print cypher key and encrypted string to OUTPUT
@@ -190,6 +218,7 @@ int main() {
      
 //    printf("The length of the string is: %d\n", string_length);
     
+    /*
     printf("\n");
     printf("ROTATION_KEY: %d\n", rotation_key);
     printf("SUBSTITUTION_KEY: %s\n", substitution_key);
@@ -200,8 +229,8 @@ int main() {
         printf("%c", string[n]);
     }
     printf("\n");
-
-     
+    */
+    
     return 0; 
 }
 //************************************************//
@@ -212,16 +241,7 @@ int main() {
 
 
 //read encryption key from INPUT
-char read_encryption_key(int *rotation_key, char *substitution_key) {
-    
-    //declare FILE INPUT
-    FILE *INPUT_KEY;
- 
-    INPUT_KEY = fopen("INPUT_KEY","r");
-
-    if ( INPUT_KEY == NULL ) {
-        perror("fopen()");
-    }
+char read_encryption_key(FILE *INPUT_KEY, int *rotation_key, char *substitution_key) {
     
     int read = 0;
     char rtn = 0;
@@ -282,15 +302,7 @@ char read_encryption_key(int *rotation_key, char *substitution_key) {
 
 
 //function to read string from INPUT 
-unsigned int read_string(char *string, unsigned int string_length) 
-{
-    FILE *INPUT;
-    
-    INPUT = fopen("INPUT","r");
-    
-    if ( INPUT == NULL ) {
-        perror("fopen()");
-    }
+unsigned int read_string(FILE *INPUT, char *string, unsigned int string_length) {
     
     unsigned int count = 0;  //initiate integer for counting loops
     unsigned int count_2 = 0; //initiate second integer for counting loops
@@ -317,7 +329,7 @@ unsigned int read_string(char *string, unsigned int string_length)
     }
     
     
-    printf("INPUT: TEST_COUNT: %d\n",count_2);
+    //printf("INPUT: TEST_COUNT: %d\n",count_2);
     
     /*
     for ( count = 0 ; string[count] != '#' ; count++) {  //until end of file reached 
@@ -329,22 +341,21 @@ unsigned int read_string(char *string, unsigned int string_length)
         count++;
     }
     */
-   
-    //string_length = strlen(string);
     
+    /*
     printf("THE_STRING_IS: ");
     for ( int n = 0 ; n < count ; n++ ) {
         printf("%c", string[n]);
     }
     printf("\n");
+    */
     
     return rtn;
 }
 
 
 //function to convert string to all caps
-char check_all_caps(char *string, const unsigned int string_length)
-{
+char check_all_caps(char *string, const unsigned int string_length) {
     //while n is less than the number of characters in string do following then increase n by one then repeat
     for ( int n = 0 ; n < string_length ; n++ ) {
         
@@ -353,6 +364,7 @@ char check_all_caps(char *string, const unsigned int string_length)
             string[n] -= 32;
         }      
     }
+    /*
     printf("ALL_CAPS:\n");
     for ( int n = 0 ; n < string_length ; n++ ) {
         printf(" '");
@@ -360,24 +372,23 @@ char check_all_caps(char *string, const unsigned int string_length)
         printf("' ");
     }
     printf("\n");
+    */
     return 1;
 }
 
 
 //FUNCTIONS FOR ROTATION CYPHER//
-
+/*TODO
 //function to determine if encode or decode
-char rotation_cypher(char *string, const unsigned int string_length, int rotation_key)
-{
+char rotation_cypher(char *string, const unsigned int string_length, int rotation_key) {
     //if encode return case 1;
     //if decode return case 2;
     //if ERROR return case 0;
     return 0;
 }
-
+*/
 //functon to encode string with rotation cypher//
-char rotation_encode(char *string, const unsigned int string_length, int rotation_key)
-{
+char rotation_encode(char *string, const unsigned int string_length, int rotation_key) {
     int rotation = ( 26 + rotation_key ) % 26;
     
     for ( int n = 0 ; n < string_length ; n++ ) {
@@ -403,8 +414,7 @@ char rotation_encode(char *string, const unsigned int string_length, int rotatio
 
 
 //function to decode string with rotation cypher//
-char rotation_decode(char *string, const unsigned int string_length, int rotation_key)
-{
+char rotation_decode(char *string, const unsigned int string_length, int rotation_key) {
     int rotation = ( 26 - rotation_key ) % 26;
     
     for ( int n = 0 ; n < string_length ; n++ ) {
@@ -477,13 +487,21 @@ char substitution_decode(char *string, const unsigned int string_length, char *s
 }
 
 /*
-//function to decode string without substitution cypher
-char substitution_decrypt(char *string, const unsigned int string_length);
-
-
 //FUNCTIONS TO DECRYPT WITHOUT KEY
 char roatation_decrypt(string, const unsigned int string_length, *rotation_key) { ;}
-
-char substitution_cypher(string, const unsigned int string_length, *substitution_key) { ;}
-
+char substitution_decrypt(string, const unsigned int string_length, *substitution_key) { ;}
 */
+
+//FUNCTION TO WRITE TO OUTPUT
+char append_OUTPUT(FILE *OUTPUT, char *string, const unsigned int string_length ) {
+    
+    for ( int n = 0 ; n < string_length ; n++ ) {
+            fprintf(OUTPUT,"%c",string[n]);
+    }
+    fprintf(OUTPUT, "\n");
+    
+    return 2;
+}
+
+
+
