@@ -23,6 +23,7 @@ unsigned int read_string(FILE *INPUT, char *string, unsigned int string_length);
 
 
 //convert string to all caps//
+//this function requires a string and the string length as an unsigned integer
 //this function will return a value of type char
 char check_all_caps(char *string, const unsigned int string_length);
 
@@ -37,37 +38,47 @@ char decrypt(char *string, const unsigned int string_length, int *rotation_key, 
 
  
 //functon to encode string with rotation cypher//
+//this function requires a string, the length onf the string as an unsigned integer and 
+// a rotation key as an integer from 1 to 25
 //this function will return a value of type char
 char rotation_encode(char *string, const unsigned int string_length, int rotation_key);
 
 
-//function to decode string with rotation cypher// 
+//function to decode string with rotation cypher//
+//this function requires a string, the length onf the string as an unsigned integer and 
+// a rotation key as an integer from 1 to 25
 //this function will return a value of type char
 char rotation_decode(char *string, const unsigned int string_length, int rotation_key);
 
  /*TODO
-//function to decode string without rotation cypher// 
+//function to decode string without rotation cypher//
 char rotation_decrypt(char *string, const unsigned int string_length);
 */
 
 //FUNCTIONS FOR SUBSTITUTION CYPHER
  
-//function to encode string with substitution cypher// 
+//function to encode string with substitution cypher//
+//this function requires a string, the length of the string as an unsigned integer and
+// a 26 letter string for a substitution key
 //this function will return a value of type char
 char substitution_encode(char *string, const unsigned int string_length, char *substitution_key);
  
 //function to decode string with substitution cypher//
+//this function requires a string, the length of the string as an unsigned integer and
+// a 26 letter string for a substitution key
 //this function will return a value of type char
 char substitution_decode(char *string, const unsigned int string_length, char *substitution_key);
 
 /*TODO*/
 //function to decode string without substitution cypher//
 //this function will return a value of type char
+//this function requires a string and the length of the string as an unsigned integer
 char substitution_decrypt(char *string, const unsigned int string_length);
 
 
 
 //FUNCTION TO WRITE TO OUTPUT
+//this function requires a FILE, a string and the length of the string as an unsigned integer
 //this function will return a value of type char
 char append_OUTPUT(FILE *OUTPUT, char *string, const unsigned int string_length );
 
@@ -80,101 +91,117 @@ char append_OUTPUT(FILE *OUTPUT, char *string, const unsigned int string_length 
 
  
 int main() {
- 
-    //declare FILES
- 
+    
+    //DECLARE FILES//
+    
+    //declare INPUT as a FILE//
     FILE *INPUT;
- 
+    
+    //open INPUT as read only
     INPUT = fopen("INPUT","r");
-
+    
+    //if could not open INPUT, print error
     if ( INPUT == NULL ) {
         perror("fopen()");
     }
-
-
+    
+    
+    //declare INPUT_KEY as a FILE//
     FILE *INPUT_KEY;
- 
+    
+    //open INPUT_KEY as read only
     INPUT_KEY = fopen("INPUT_KEY","r");
-
+    
+    //if could not open INPUT, print error
     if ( INPUT_KEY == NULL ) {
         perror("fopen()");
     }
-
-
+    
+    
+    //declare OUTPUT as a FILE
     FILE *OUTPUT;
-
+    
+    //open OUTPUT as append (write to end of file)
     OUTPUT = fopen("OUTPUT","a");
- 
+    
+    //if could not open INPUT, print error
     if ( OUTPUT == NULL ) {
         perror("fopen()");
     }
     
     
-    //declare rotation_key as an integer
+    //declare rotation_key as an integer of value 0
     int rotation_key = 0;
     
-    //declare array to hold substitution cypher
+    //declare substitution_key as an array of type char
     char substitution_key[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
     
+    //declare cypher_type as a char
+    // with the value of the return of the function read_encryption_key
+    char cypher_type = read_encryption_key(INPUT_KEY, &rotation_key, substitution_key);
     
-    //read value for cypher form INPUT, if sucessful print encryption key to terminal //TODO// and set function type    
-    char cypher_type = 0;
-    
-    switch ( read_encryption_key(INPUT_KEY, &rotation_key, substitution_key) ) {
-        case 1:
+    //read value for cypher key from INPUT, if sucessful print encryption key to terminal   
+    //switch case based on the return value of the cypher key type
+    switch ( cypher_type ) {
+        case 1:  
             printf("ROTATION_KEY: %d\n", rotation_key);
-            cypher_type = 1;
             break;
         case 2:
             printf("SUBSTITUTION_KEY: %s\n", substitution_key);
-            cypher_type = 2;
             break;
         case 0:
             printf("CASE: DECRYPT\n");
-            cypher_type = 0;
             break;
+        default:
+            printf("ERROR: CYPHER_TYPE\n");
+            return 0;
     }
     
     
     
     //unused// char string[1024] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','\0'};
+    
+    //declare string_IN, string and string_OUT as arrays of type char each 1024 characters long
     char string_IN[1024];
     char string[1024];
     char string_OUT[1024];
+    
+    //declare string_length as an unsigned integer with the value 1024
     unsigned int string_length = 1024;
     
     
     //read string from INPUT
     read_string(INPUT, string_IN, string_length);
     
-    //get number of characters in string 
+    //get length of string_IN
     string_length = strlen(string_IN);
     
+    //print the length of string_IN to the terminal
     printf("STRING_LENGTH: %d\n", string_length);
     
-    //to convert string to all caps 
+    //convert all letters in string_IN to capitals
     check_all_caps(string_IN, string_length);
     
-    
+    //duplicate string_IN across to string and string_OUT
     for ( int n = 0 ; n < string_length ; n++ ) {
         string[n] = string_IN[n];
         string_OUT[n] = string_IN[n];
     }
     
     
-    //dependng on if cypher key is rotation, substitution or not found
+    //switch case dependng on if the cypher key is a rotation or substitution -type key or if it was not found
     switch (cypher_type) {
         //TODO// if () {;} else if () {;}
         case 1:  //if rotation-type cypher key//
             //if ( encoded == 0 ) {
-                fprintf(OUTPUT,"ROTATION_ENCODE:\n");
+                fprintf(OUTPUT,"ROTATION_ENCODE:\n");  //print "ROTATION_ENCODE:" and "\n", a new line character, to OUTPUT
                 //encrypt with rotation cypher
                 rotation_encode(string, string_length, rotation_key);
                 append_OUTPUT(OUTPUT, string, string_length);
-                fprintf(OUTPUT,"\n");
+                fprintf(OUTPUT,"\n");  //print a new line character to OUTPUT
             //}
             //else if ( encoded == 1 ) {
-                fprintf(OUTPUT,"ROATION_DECODE:\n");
+                fprintf(OUTPUT,"ROATION_DECODE:\n");  //print "ROTATION_DECODE:" and a new line character to OUTPUT
                 //decrypt with rotation cypher
                 rotation_decode(string_OUT, string_length, rotation_key);
                 append_OUTPUT(OUTPUT, string_OUT, string_length);
