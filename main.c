@@ -2,37 +2,47 @@
  
 #include <string.h>
 
-//for isspace// #include <ctype.h>
 
  
  
-//FUNCTIONS TO READ FROM INPUT/
+//FUNCTIONS TO READ FROM INPUT//
 
- 
-//read encryption key from INPUT 
+
+//read encryption key from INPUT_KEY//
+//this function requires a FILE, a pointer to an integer and an array of type char (a string) that is 27 characters long (alphabet plus end NULL)
+//this function will return a value of type char
+// the value will be 1 to indicate a rotation-type cypher key
+// the value will be 2 to indicate a substitution-type cypher key
 char read_encryption_key(FILE *INPUT_KEY, int *rotation_key, char *substitution_key);
 
 
-//read string from INPUT 
+//read string from INPUT//
+//this function requires a FILE, an array of type char and the length of the string as an unsigned integer 
+//the return value of this function will be an unsigned integer
 unsigned int read_string(FILE *INPUT, char *string, unsigned int string_length);
 
 
-//function to convert string to all caps//
+//convert string to all caps//
+//this function will return a value of type char
 char check_all_caps(char *string, const unsigned int string_length);
 
- 
-//FUNCTION TO DECRYPT WITHOUT KEY
+
+/*  //UNUSED//
+//FUNCTION TO DECRYPT WITHOUT KEY//
 char decrypt(char *string, const unsigned int string_length, int *rotation_key, char *substitution_key);
+*/
 
 
 //FUNCTIONS FOR ROTATION CYPHER//
 
  
 //functon to encode string with rotation cypher//
+//this function will return a value of type char
 char rotation_encode(char *string, const unsigned int string_length, int rotation_key);
 
 
 //function to decode string with rotation cypher// 
+//this function will return a value of type char
 char rotation_decode(char *string, const unsigned int string_length, int rotation_key);
 
  /*TODO
@@ -43,18 +53,22 @@ char rotation_decrypt(char *string, const unsigned int string_length);
 //FUNCTIONS FOR SUBSTITUTION CYPHER
  
 //function to encode string with substitution cypher// 
+//this function will return a value of type char
 char substitution_encode(char *string, const unsigned int string_length, char *substitution_key);
  
 //function to decode string with substitution cypher//
+//this function will return a value of type char
 char substitution_decode(char *string, const unsigned int string_length, char *substitution_key);
 
 /*TODO*/
 //function to decode string without substitution cypher//
+//this function will return a value of type char
 char substitution_decrypt(char *string, const unsigned int string_length);
 
 
 
 //FUNCTION TO WRITE TO OUTPUT
+//this function will return a value of type char
 char append_OUTPUT(FILE *OUTPUT, char *string, const unsigned int string_length );
 
 
@@ -147,89 +161,63 @@ int main() {
         string_OUT[n] = string_IN[n];
     }
     
-    /*TODO
-    //variable for encodedTRUE/FALSE
-    unsigned int encoded = 2;
     
-    while ( encoded == 2 ) {
-        
-        //declare variable for encode/decode
-        char encode_decode = 'E';  //TODO initialize as 'N'
-        
-        //query user for encrypt / decrypt
-        printf("[E]NCODE/[D]ECODE\n");
-        scanf("%c/n", &encode_decode);
-        
-        if ( encode_decode == 'E' ) {
-            encoded = 0;
-        }
-        else if ( encode_decode == 'D' ) {
-            encoded = 1;
-        }
-        else {
-            printf("ERROR: INVALID_SELECTION");
-        }
-        
-    }*/
-    
+    //dependng on if cypher key is rotation, substitution or not found
     switch (cypher_type) {
-        //TODO// if elseif
-        case 1:
+        //TODO// if () {;} else if () {;}
+        case 1:  //if rotation-type cypher key//
             //if ( encoded == 0 ) {
                 fprintf(OUTPUT,"ROTATION_ENCODE:\n");
                 //encrypt with rotation cypher
                 rotation_encode(string, string_length, rotation_key);
                 append_OUTPUT(OUTPUT, string, string_length);
+                fprintf(OUTPUT,"\n");
             //}
             //else if ( encoded == 1 ) {
-                fprintf(OUTPUT,"\nROATION_DECODE:\n");
+                fprintf(OUTPUT,"ROATION_DECODE:\n");
                 //decrypt with rotation cypher
                 rotation_decode(string_OUT, string_length, rotation_key);
                 append_OUTPUT(OUTPUT, string_OUT, string_length);
                 fprintf(OUTPUT,"\n\n");
             //}
             break;
-        case 2:
+        case 2:  //if substitution-type cypher key
             //if ( encoded == 0 ) {
                 fprintf(OUTPUT,"SUBSTITUTION_ENCODE:\n");
                 substitution_encode(string, string_length, substitution_key);
                 append_OUTPUT(OUTPUT, string, string_length);
+                fprintf(OUTPUT,"\n");
             //}
             //else if ( encoded == 1 ) {
-                fprintf(OUTPUT,"\nSUBSTITUTION_DECODE:\n");
+                substitution_decode(string, string_length, substitution_key);
+                append_OUTPUT(OUTPUT, string, string_length);
+                fprintf(OUTPUT,"\n");
+                
+                fprintf(OUTPUT,"SUBSTITUTION_DECODE:\n");
                 substitution_decode(string_OUT, string_length, substitution_key);
                 append_OUTPUT(OUTPUT, string_OUT, string_length);
                 fprintf(OUTPUT,"\n\n");
             //}
             break;
-        case 0:
+        case 0:  //if cypher key not found
             printf("ERROR: CYPHER_NOT_FOUND\n");
+            printf("ATTEMPTING DECRYPTION...\n");
             fprintf(OUTPUT,"\nERROR: CYPHER_NOT_FOUND\n");
+            fprintf(OUTPUT,"ATTEMPTING DECRYPTION\n");
+            fprintf(OUTPUT,"\n");
+            //brute force decryption of rotation cypher
+            for ( int count = 1 ; count < 26 ; count++ ) {
+                rotation_key = count;
+                rotation_decode(string_OUT, string_length, rotation_key);
+                append_OUTPUT(OUTPUT, string_OUT, string_length);
+                fprintf(OUTPUT,"\n");
+            }
             fprintf(OUTPUT,"\n");
             //printf("CASE_0: DECRYPT\n");
             //TODO// decrypt(string, string_length, &rotation_key, substitution_key);
             break;
     }
     
-    
-    
-    //print cypher key and encrypted string to OUTPUT
-//    printf("Key is: %d\n", rotation_key);
-     
-//    printf("The length of the string is: %d\n", string_length);
-    
-    /*
-    printf("\n");
-    printf("ROTATION_KEY: %d\n", rotation_key);
-    printf("SUBSTITUTION_KEY: %s\n", substitution_key);
-    
-    printf("\n");
-    printf("THE_STRING_IS: ");
-    for ( int n = 0 ; n < string_length ; n++ ) {
-        printf("%c", string[n]);
-    }
-    printf("\n");
-    */
     
     return 0; 
 }
@@ -289,7 +277,7 @@ char read_encryption_key(FILE *INPUT_KEY, int *rotation_key, char *substitution_
 
         int sub1 = substitution_key[0];
         /*int subL = substitution_key[25];*/
-        if ( ( read == 2 ) && ( sub1 != '#' ) /*&& ( subL == 0 )*/ ) {  //if substitution key
+        if ( ( read == 2 ) && ( sub1 != '/' ) /*&& ( subL == 0 )*/ ) {  //if substitution key
             rtn = 2;
         }
          else if ( read == 2 ) {
@@ -329,26 +317,6 @@ unsigned int read_string(FILE *INPUT, char *string, unsigned int string_length) 
     }
     
     
-    //printf("INPUT: TEST_COUNT: %d\n",count_2);
-    
-    /*
-    for ( count = 0 ; string[count] != '#' ; count++) {  //until end of file reached 
-               
-        fscanf(INPUT,"%c", &string[count]);
-        
-        string[count+1] = 0;
-        
-        count++;
-    }
-    */
-    
-    /*
-    printf("THE_STRING_IS: ");
-    for ( int n = 0 ; n < count ; n++ ) {
-        printf("%c", string[n]);
-    }
-    printf("\n");
-    */
     
     return rtn;
 }
@@ -364,15 +332,7 @@ char check_all_caps(char *string, const unsigned int string_length) {
             string[n] -= 32;
         }      
     }
-    /*
-    printf("ALL_CAPS:\n");
-    for ( int n = 0 ; n < string_length ; n++ ) {
-        printf(" '");
-        printf("%c", string[n]);
-        printf("' ");
-    }
-    printf("\n");
-    */
+
     return 1;
 }
 
