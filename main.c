@@ -262,7 +262,6 @@ char read_encryption_key(FILE *INPUT_KEY, int *rotation_key, char *substitution_
     char rtn = 0;
     unsigned int count = 0;
     
-    //read = fscanf(INPUT,"#KEY: %d\n", rotation_key);  //TODO ?convert to 
     rewind(INPUT_KEY);
 /*    while( ( fscanf(INPUT,"#KEY: %d", rotation_key ) == 0 ) && ( count < 100 ) ) {
         count++;  //TODO increment readfrom pos
@@ -297,14 +296,12 @@ char read_encryption_key(FILE *INPUT_KEY, int *rotation_key, char *substitution_
                 if ( 1 ) {  //TODO error check substitution key///////////////////////// //TODO//
                     read = 2;
                 }
-                //printf("SUB\n");  //testing
                 break;
             }
         }
 
         int sub1 = substitution_key[0];
-        /*int subL = substitution_key[25];*/
-        if ( ( read == 2 ) && ( sub1 != '/' ) /*&& ( subL == 0 )*/ ) {  //if substitution key
+        if ( ( read == 2 ) && ( sub1 != '/' ) ) {  //if substitution key
             rtn = 2;
         }
          else if ( read == 2 ) {
@@ -364,16 +361,6 @@ char check_all_caps(char *string, const unsigned int string_length) {
 }
 
 
-//FUNCTIONS FOR ROTATION CYPHER//
-/*TODO
-//function to determine if encode or decode
-char rotation_cypher(char *string, const unsigned int string_length, int rotation_key) {
-    //if encode return case 1;
-    //if decode return case 2;
-    //if ERROR return case 0;
-    return 0;
-}
-*/
 //functon to encode string with rotation cypher//
 char rotation_encode(char *string, const unsigned int string_length, int rotation_key) {
     int rotation = ( 26 + rotation_key ) % 26;
@@ -434,11 +421,6 @@ char substitution_encode(char *string, const unsigned int string_length, char *s
     for ( int n = 0 ; n < string_length ; n++ ) {        //for each character in string
         if ( string[n] >= 65 && string[n] <= 90 ) {      //if it is a capital
             string[n] = substitution_key[(string[n] - 65)];
-            /*for ( int i = 0 ; i < 26 ; i++ ) {           //...
-                if ( string[n] == alphabet_0to25[i] ) {  //work out what number of the alphabet it is
-                    string[n] = substitution_key[i];     //and substitute the character at the same place in the key
-                }
-            }*/
         }
     }
     for ( int n = 0 ; n < string_length ; n++ ) {
@@ -456,7 +438,6 @@ char substitution_decode(char *string, const unsigned int string_length, char *s
     
     for ( int n = 0 ; n < string_length ; n++ ) {        //for each character in string
         if ( string[n] >= 65 && string[n] <= 90 ) {      //if it is a capital
-            //string[n] = substitution_key[(string[n] - 65)];
             for ( int i = 0 ; i < 26 ; i++ ) {           //...
                 if ( string[n] == substitution_key[i] ) {  //work out what number of the alphabet it is
                     string[n] = A_to_Z[i];     //and substitute the character at the same place in the key
@@ -490,5 +471,4 @@ char append_OUTPUT(FILE *OUTPUT, char *string, const unsigned int string_length 
     return 2;
 }
 
-
-
+//END//
