@@ -1,24 +1,6 @@
-#KEY: ZYXWVUTSRQPONMLKJIHGFEDCBA
+#KEY: 
 
 //enter cypher key with format
 //#KEY: <key>\n
 //
 //the key may be either an integer from 1 to 25 or a 26 character string
-
-
-
-24
-
-12
-
-01
-
-
-
-ABCDEFGHIJKLMNOPQRSTUVWXYZ
-
-
-DEFGHIJKLMNOPQRSTUVWXYZABC
-
-
-ZYXWVUTSRQPONMLKJIHGFEDCBA
